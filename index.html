@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="bn">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description"
+        content="শুয়োরের পোঁদে লাথি — দ্রুত অ্যাকশন গেম। শুয়োরকে যত জোরে পারো লাথি মারো, কম্বো বানাও, হাই স্কোর ভাঙো!" />
+    <meta name="theme-color" content="#080d1a" />
+    <title>শুয়োরের পোঁদে লাথি!</title>
+    <link rel="icon"
+        href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>👟</text></svg>" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Bangers&family=Exo+2:wght@400;600;700;900&display=swap"
+        rel="stylesheet" />
+    <link rel="stylesheet" href="style.css" />
+</head>
+
+<body>
+
+    <!-- ANIMATED BACKGROUND BLOBS -->
+    <div class="bg-anim" aria-hidden="true">
+        <div class="blob blob-1"></div>
+        <div class="blob blob-2"></div>
+        <div class="blob blob-3"></div>
+        <div class="blob blob-4"></div>
+    </div>
+
+    <!-- MAIN MENU -->
+    <div id="menu-screen" class="screen active">
+        <div class="menu-box">
+            <div class="menu-logo">
+                <span class="logo-shoe">👟</span>
+                <h1>শুয়োরের পোঁদে<br><span class="logo-buddy">লাথি</span></h1>
+            </div>
+            <p class="subtitle">শুয়োরকে আকাশে উড়িয়ে দাও! 🦵</p>
+
+            <div class="preview-wrapper">
+                <canvas id="preview-canvas" width="320" height="190"></canvas>
+                <div class="preview-label left-label">তুমি</div>
+                <div class="preview-vs">VS</div>
+                <div class="preview-label right-label">শুয়োর</div>
+            </div>
+
+            <div class="menu-buttons">
+                <button id="play-btn" class="btn btn-play" aria-label="খেলা শুরু করো">
+                    <span class="btn-icon">▶</span>
+                    <span class="btn-text">খেলা শুরু কর</span>
+                    <span class="btn-shine"></span>
+                </button>
+                <button id="howto-btn" class="btn btn-howto" aria-label="কীভাবে খেলব?">
+                    <span class="btn-icon">❓</span>
+                    <span class="btn-text">কীভাবে খেলব?</span>
+                </button>
+            </div>
+
+            <div class="high-score-display">
+                <span class="trophy-icon">🏆</span>
+                <span class="hs-label">সেরা স্কোর</span>
+                <span id="menu-high-score" class="hs-value">0</span>
+                <span class="hs-pts">পয়েন্ট</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- HOW TO PLAY -->
+    <div id="howto-screen" class="screen">
+        <div class="menu-box">
+            <div class="howto-header">
+                <span>🎮</span>
+                <h2>কীভাবে খেলব?</h2>
+            </div>
+            <ul class="instructions">
+                <li><span class="instr-icon">�</span><span><strong>ট্যাপ</strong>, <strong>ক্লিক</strong> বা
+                        <strong>স্পেসবার</strong> চেপে শুয়োরকে লাথি মারো</span></li>
+                <li><span class="instr-icon">⏱️</span><span><strong>৩০ সেকেন্ডের</strong> মধ্যে যত বেশি পারো স্কোর
+                        করো</span></li>
+                <li><span class="instr-icon">💥</span><span>শুয়োর আকাশে থাকলে স্কোর <strong>এমনিতেই বাড়তে
+                            থাকে</strong></span></li>
+                <li><span class="instr-icon">🌟</span><span>একের পর এক লাথি মেরে <strong>কম্বো মাল্টিপ্লায়ার</strong>
+                        বাড়াও — সর্বোচ্চ <strong>×১০</strong>!</span></li>
+                <li><span class="instr-icon">😂</span><span>শুয়োরের <strong>মুখের ভাব</strong> দেখো প্রতিটা
+                        লাথিতে!</span></li>
+            </ul>
+            <button id="back-btn" class="btn btn-back" aria-label="মেনুতে ফিরে যাও">← মেনুতে ফিরে যাও</button>
+        </div>
+    </div>
+
+    <!-- GAME SCREEN -->
+    <div id="game-screen" class="screen">
+        <!-- TOP HUD -->
+        <div id="hud">
+            <div class="hud-card">
+                <span class="hud-label">স্কোর</span>
+                <span id="score-display">0</span>
+            </div>
+            <div class="hud-card hud-combo">
+                <span class="hud-label">কম্বো</span>
+                <span id="combo-display">x1</span>
+            </div>
+            <div class="hud-card">
+                <span class="hud-label">সেরা</span>
+                <span id="high-score-display">0</span>
+            </div>
+        </div>
+
+        <!-- CANVAS -->
+        <canvas id="game-canvas"></canvas>
+
+        <!-- TIMER BAR -->
+        <div id="timer-bar-wrap">
+            <div id="timer-bar"></div>
+            <span id="timer-label">৩০সে</span>
+        </div>
+
+        <div id="kick-hint">স্পেস / ক্লিক = লাথি 🦵</div>
+        <button id="pause-btn" title="গেম থামাও" aria-label="গেম থামাও">⏸</button>
+    </div>
+
+    <!-- PAUSE SCREEN -->
+    <div id="pause-screen" class="screen overlay">
+        <div class="menu-box small">
+            <div class="pause-icon">⏸</div>
+            <h2>গেম থামানো হয়েছে</h2>
+            <button id="resume-btn" class="btn btn-play">
+                <span class="btn-icon">▶</span>
+                <span class="btn-text">চালিয়ে যাও</span>
+                <span class="btn-shine"></span>
+            </button>
+            <button id="quit-btn" class="btn btn-back">🏠 মেনুতে ফিরে যাও</button>
+        </div>
+    </div>
+
+    <!-- GAME OVER SCREEN -->
+    <div id="gameover-screen" class="screen">
+        <div id="confetti-container" aria-hidden="true"></div>
+        <div class="menu-box gameover-box">
+            <div class="result-emoji" id="result-emoji">😂</div>
+            <h2 id="result-title">খেলা শেষ!</h2>
+
+            <div class="result-stats">
+                <div class="stat">
+                    <span class="stat-label">🎯 স্কোর</span>
+                    <span id="final-score" class="stat-val">0</span>
+                </div>
+                <div class="stat">
+                    <span class="stat-label">⚡ সেরা কম্বো</span>
+                    <span id="final-combo" class="stat-val">x1</span>
+                </div>
+                <div class="stat highlight">
+                    <span class="stat-label">🏆 হাই স্কোর</span>
+                    <span id="final-high" class="stat-val">0</span>
+                </div>
+            </div>
+
+            <div id="new-record" class="new-record hidden">🎉 নতুন রেকর্ড!</div>
+
+            <div class="gameover-buttons">
+                <button id="retry-btn" class="btn btn-play" aria-label="আবার খেলো">
+                    <span class="btn-icon">🔄</span>
+                    <span class="btn-text">আবার খেলো</span>
+                    <span class="btn-shine"></span>
+                </button>
+                <button id="menu-btn" class="btn btn-back">🏠 মেনু</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="game.js"></script>
+</body>
+
+</html>
