@@ -1,4 +1,4 @@
-# 👟 হাদারামের পোঁদে লাথি! — Kick Your Buddy
+# 👟 হাদারামের পোঁদে লাথি!
 
 > A fast-paced Bengali action game built entirely with **HTML5 Canvas** — zero external libraries, zero frameworks, zero build tools. Pure vanilla fun.
 
