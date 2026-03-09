@@ -1623,7 +1623,7 @@ function endGame() {
     document.getElementById('new-record').classList.toggle('hidden', !isNewRecord);
 
     const tiers = [
-        [3000, '🏆', 'আরে! শুয়োর পরাজিত!'],
+        [3000, '🏆', 'আরে! হাদারাম পরাজিত!'],
         [1500, '🦵', 'বাপ রে বাপ! লাথির উস্তাদ!'],
         [500, '👊', 'মন্দ না ভাই!'],
         [100, '👍', 'ভালোই তো বর্খাস্ত!'],
