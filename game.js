@@ -88,6 +88,7 @@ let state, score, combo, maxCombo, bestHit, gameActive, animFrame;
 let particles = [];
 let floatingTexts = [];
 let stars = [];
+let screamCooldown = 0;
 
 // ─── CHARACTER DEFINITIONS ──────────────────────────────────
 function makeKicker(x, y) {
@@ -139,6 +140,7 @@ function initGame() {
     score = 0; combo = 1; maxCombo = 1; bestHit = 0; gameActive = true;
     state = GS.IDLE;
     particles = []; floatingTexts = [];
+    screamCooldown = 0;
     initStars();
 
     const ground = canvas.height * 0.72;
@@ -221,6 +223,14 @@ function updateFriend() {
 
     // Score while flying
     if (friend.isFlying) {
+        // Random scream
+        screamCooldown--;
+        if (screamCooldown <= 0) {
+            screamCooldown = 40 + Math.floor(Math.random() * 30);
+            const scream = FLYING_SCREAMS[Math.floor(Math.random() * FLYING_SCREAMS.length)];
+            spawnFloatingText(friend.x, friend.y - 65, scream, '#ff6b6b');
+            playScreamSound(scream);
+        }
         score += combo;
         if (score > bestHit) bestHit = score;
         updateHUD();
@@ -258,6 +268,48 @@ function updateKicker() {
 function kickFeedback() {
     const msgs = ['ধাঁই!', 'তুড়োম!', 'লাথি! 🦵', 'চাট্না!', 'গুঁড়িয়ে দে!', 'কম্বো!'];
     return msgs[Math.floor(Math.random() * msgs.length)];
+}
+
+// ─── FLYING SCREAMS ──────────────────────────────────────────
+const FLYING_SCREAMS = [
+    'ওরে, আমার আর পোঁদে মারিস না।',
+];
+
+// ─── SCREAM SOUND (Web Speech API — real human TTS voice) ────
+// Pre-load voices as soon as the browser is ready
+if (window.speechSynthesis && window.speechSynthesis.onvoiceschanged !== undefined) {
+    window.speechSynthesis.onvoiceschanged = () => window.speechSynthesis.getVoices();
+}
+
+function playScreamSound(text) {
+    try {
+        if (!window.speechSynthesis) return;
+
+        // Strip emoji and punctuation that TTS can't vocalise naturally
+        const spokenText = text
+            .replace(/[\u{1F300}-\u{1FFFF}\u2600-\u27BF]/gu, '')
+            .replace(/!+/g, '')
+            .trim();
+        if (!spokenText) return;
+
+        // Cancel any queued speech so screams don't pile up
+        window.speechSynthesis.cancel();
+
+        const utt = new SpeechSynthesisUtterance(spokenText);
+        utt.lang = 'bn-BD';                         // Bengali
+        utt.rate = 1.4 + Math.random() * 0.6;      // 1.4–2.0× speed = panicked
+        utt.pitch = 1.5 + Math.random() * 0.5;      // high pitch = scared / pain
+        utt.volume = 1.0;
+
+        // Pick the best available voice: Bengali → Hindi → default
+        const voices = window.speechSynthesis.getVoices();
+        const voice = voices.find(v => v.lang.startsWith('bn'))
+            || voices.find(v => v.lang.startsWith('hi'))
+            || null;
+        if (voice) utt.voice = voice;
+
+        window.speechSynthesis.speak(utt);
+    } catch (e) { /* silent fallback */ }
 }
 
 // ─── KICK SOUND (Web Audio API) ──────────────────────────────
@@ -369,6 +421,7 @@ function playCrySound() {
 }
 
 function launchFriend() {
+    screamCooldown = 25;  // first scream appears quickly
     const power = 14 + Math.random() * 6;
     const angle = -(Math.PI / 2.2 + Math.random() * 0.25); // ~65-75° upward (steeper)
     friend.vx = power * Math.cos(angle) * 0.55;  // much less horizontal
